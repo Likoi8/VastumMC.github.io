@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VastumMC — неоновый мир</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* === Палитра Catppuccin Mocha / Tokyo Night === */
+        :root {
+            --bg-darkest: #11111b;
+            --bg-dark: #1a1b26;
+            --bg-panel: #24283b;
+            --accent-lavender: #cba6f7;
+            --accent-mint: #94e2d5;
+            --accent-pink: #f5c2e7;
+            --accent-yellow: #f9e2af;
+            --accent-sky: #89dceb;
+            --text-primary: #c0caf5;
+            --text-dim: #565f89;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-darkest);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* === КОНТЕЙНЕР ДЛЯ ПАДАЮЩИХ ЗВЁЗД === */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* Анимация падающей звезды */
+        @keyframes fall {
+            0% {
+                transform: translateY(-20vh) translateX(-10vw) rotate(45deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(120vh) translateX(20vw) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+        /* Базовая звезда */
+        .falling-star {
+            position: absolute;
+            width: 150px;  /* Длина хвоста */
+            height: 2px;    /* Толщина */
+            background: linear-gradient(90deg, 
+                transparent 0%,
+                var(--star-color) 50%,
+                transparent 100%
+            );
+            filter: blur(1px);
+            animation: fall linear infinite;
+            opacity: 0;
+            top: -10%;
+            left: -5%;
+            border-radius: 50%;
+        }
+
+        /* === Hero секция === */
+        .hero {
+            background: linear-gradient(rgba(26,27,38,0.85), rgba(17,17,27,0.85));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(to right, var(--accent-lavender), var(--accent-sky));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 5px 15px rgba(203,166,247,0.3);
+            line-height: 1.4;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            color: var(--text-primary);
+            opacity: 0.9;
+        }
+
+        /* Ряд с IP-блоками */
+        .ip-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .ip-container {
+            background: rgba(36,40,59,0.8);
+            backdrop-filter: blur(6px);
+            padding: 20px 30px;
+            border-radius: 16px;
+            border: 1px solid var(--accent-lavender);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .ip-container:first-child {
+            border-color: var(--accent-mint);
+        }
+        .ip-container:last-child {
+            border-color: var(--accent-sky);
+        }
+
+        .ip-container:hover {
+            background: rgba(36,40,59,0.95);
+            border-color: var(--accent-pink);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(203,166,247,0.3);
+        }
+
+        .ip-address {
+            font-size: 1.4rem;
+            font-weight: 600;
+            font-family: monospace;
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        .ip-label {
+            display: block;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            color: var(--text-dim);
+        }
+
+        .copy-status {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-lavender);
+            color: var(--bg-darkest);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* === Секция особенностей === */
+        .features {
+            padding: 100px 20px;
+            text-align: center;
+            background: var(--bg-darkest);
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: var(--accent-lavender);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-panel);
+            padding: 40px;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            border: 1px solid var(--text-dim);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(203,166,247,0.2);
+            border-color: var(--accent-lavender);
+            background: #2a2e41;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--accent-mint);
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            color: var(--accent-yellow);
+        }
+
+        .feature-card p {
+            color: var(--text-primary);
+            opacity: 0.9;
+        }
+
+        /* === Секция Telegram === */
+        .telegram-section {
+            padding: 100px 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #1a1b26, #24283b);
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-telegram {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: var(--accent-sky);
+            color: var(--bg-darkest);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(137,220,235,0.3);
+            border: none;
+        }
+
+        .btn-telegram:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(137,220,235,0.5);
+            background-color: var(--accent-lavender);
+            color: var(--bg-darkest);
+        }
+
+        /* === Footer === */
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: #0f0f17;
+            color: var(--text-dim);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* === Адаптив === */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .hero p { font-size: 1.1rem; }
+            .ip-address { font-size: 1.1rem; }
+            .ip-container { min-width: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Контейнер для падающих звёзд (будет заполнен скриптом) -->
+    <div class="stars-container" id="stars-container"></div>
+
+    <section class="hero">
+        <h1 class="animate-in">VastumMC</h1>
+        <p class="animate-in delay-1">Исследуй. Выживай. Побеждай.</p>
+        
+        <div class="ip-row animate-in delay-2">
+            <div class="ip-container" onclick="copyIP(this)">
+                <span class="copy-status">Скопировано!</span>
+                <div class="ip-address">construction-vt.gl.joinmc.link:33690</div>
+                <span class="ip-label">Нажми, чтобы скопировать</span>
+            </div>
+            <div class="ip-container" onclick="copyIP(this)">
+                <span class="copy-status">Скопировано!</span>
+                <div class="ip-address">construction-vt.gl.joinmc.link</div>
+                <span class="ip-label">Нажми, чтобы скопировать</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2 class="section-title animate-in">Почему выбирают нас?</h2>
+        <div class="features-grid">
+            <div class="feature-card animate-in delay-1">
+                <div class="feature-icon">🚀</div>
+                <h3>Стабильная работа</h3>
+                <p>Мощное железо и оптимизация обеспечивают высокий TPS даже при большом онлайне. Забудь о лагах.</p>
+            </div>
+            <div class="feature-card animate-in delay-2">
+                <div class="feature-icon">⚔️</div>
+                <h3>Уникальный геймплей</h3>
+                <p>Сбалансированное выживание, интересные плагины и экономика, которую строят игроки.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="telegram-section animate-in">
+        <h2 class="section-title">Присоединяйся к сообществу</h2>
+        <p style="margin-bottom: 30px; color: var(--text-dim);">Общайся, находи друзей и узнавай новости первым.</p>
+        <a href="https://t.me/VastumMC" class="btn-telegram" target="_blank">Перейти в Telegram</a>
+    </section>
+
+    <footer>
+        <p>© 2026 VastumMC. Все права защищены.</p>
+    </footer>
+
+    <script>
+        // Функция копирования IP
+        function copyIP(container) {
+            const ipElement = container.querySelector('.ip-address');
+            const statusElement = container.querySelector('.copy-status');
+            if (!ipElement || !statusElement) return;
+            const ipText = ipElement.innerText;
+            navigator.clipboard.writeText(ipText).then(() => {
+                statusElement.style.opacity = '1';
+                setTimeout(() => {
+                    statusElement.style.opacity = '0';
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования: ', err);
+            });
+        }
+
+        // === СОЗДАНИЕ ПАДАЮЩИХ ЗВЁЗД ===
+        function createFallingStars() {
+            const container = document.getElementById('stars-container');
+            if (!container) return;
+            
+            // Очищаем контейнер
+            container.innerHTML = '';
+            
+            // Цвета для звёзд из нашей палитры
+            const colors = [
+                '#cba6f7', // лавандовый
+                '#94e2d5', // мятный
+                '#f5c2e7', // розовый
+                '#f9e2af', // жёлтый
+                '#89dceb'  // голубой
+            ];
+            
+            // Создаём 30 падающих звёзд
+            for (let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.className = 'falling-star';
+                
+                // Случайный цвет
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                star.style.setProperty('--star-color', color);
+                
+                // Случайная длительность анимации (от 3 до 8 секунд)
+                const duration = 3 + Math.random() * 5;
+                star.style.animationDuration = duration + 's';
+                
+                // Случайная задержка начала (чтобы звёзды не все сразу падали)
+                const delay = Math.random() * 15;
+                star.style.animationDelay = delay + 's';
+                
+                // Случайная стартовая позиция по горизонтали
+                const left = Math.random() * 100;
+                star.style.left = left + '%';
+                
+                // Случайная высота начала (немного варьируем)
+                const top = -10 + Math.random() * 20;
+                star.style.top = top + '%';
+                
+                // Случайная длина хвоста (от 100px до 250px)
+                const width = 100 + Math.random() * 150;
+                star.style.width = width + 'px';
+                
+                // Случайная толщина (от 1px до 3px)
+                const height = 1 + Math.random() * 2;
+                star.style.height = height + 'px';
+                
+                // Разная степень размытия
+                const blur = 0.5 + Math.random() * 2;
+                star.style.filter = `blur(${blur}px)`;
+                
+                container.appendChild(star);
+            }
+        }
+
+        // Запускаем создание звёзд после загрузки страницы
+        window.addEventListener('load', createFallingStars);
+        
+        // Опционально: обновляем звёзды каждые 30 секунд для разнообразия
+        setInterval(createFallingStars, 30000);
+    </script>
+</body>
+</html>

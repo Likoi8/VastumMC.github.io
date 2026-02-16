@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vastum-MC — Твой новый мир Minecraft</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00d2ff;
+            --secondary-color: #3a7bd5;
+            --bg-dark: #121212;
+            --text-color: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.3s; }
+        .delay-2 { animation-delay: 0.6s; }
+
+        .hero {
+            /* Убедись, что название файла совпадает с загруженным */
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('IMG_0862.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero h1 {
+            /* Пиксельный шрифт и увеличенный размер */
+            font-family: 'Press Start 2P', cursive;
+            font-size: 4.5rem; 
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ffffff, var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .ip-container {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 25px 50px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 3px solid var(--primary-color);
+            transition: 0.3s;
+        }
+
+        .ip-container:hover { transform: scale(1.05); background: rgba(0, 0, 0, 0.8); }
+
+        .ip-address { 
+            font-family: 'Press Start 2P', cursive; 
+            font-size: 1.2rem; 
+            color: var(--primary-color); 
+        }
+
+        .btn-telegram {
+            display: inline-block;
+            padding: 15px 35px;
+            background-color: #0088cc;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 30px;
+            font-family: 'Poppins', sans-serif;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-telegram:hover { background-color: #00aaff; box-shadow: 0 0 20px rgba(0,136,204,0.5); }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .ip-address { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <h1 class="animate-in">VASTUM-MC</h1>
+        <p class="animate-in delay-1">Твой идеальный мир Minecraft</p>
+        
+        <div class="ip-container animate-in delay-2" onclick="copyIP()">
+            <div class="ip-address" id="server-ip">192.168.0.103</div> 
+            <p style="font-size: 0.7rem; color: #00d2ff; margin-top: 10px; font-family: 'Press Start 2P';">КЛИКНИ ЧТОБЫ КОПИРОВАТЬ</p>
+        </div>
+
+        <a href="https://t.me/VastumMC" class="btn-telegram animate-in delay-2" target="_blank">Telegram Канал</a>
+    </section>
+
+    <script>
+        function copyIP() {
+            const ipText = document.getElementById('server-ip').innerText;
+            navigator.clipboard.writeText(ipText);
+            alert("IP сервера скопирован!");
+        }
+    </script>
+</body>
+</html>

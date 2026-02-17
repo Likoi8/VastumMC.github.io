@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VastumMC — неоновый мир Minecraft</title>
+    
+    <!-- SEO: метатеги и ключевые слова -->
+    <meta name="description" content="VastumMC — стабильный Minecraft сервер с уникальным геймплеем, падающими звёздами, копированием IP и Telegram‑каналом. Заходи и играй!">
+    <meta name="keywords" content="VastumMC, Vastum MC, вастум мц, васткм мц, вастум, васткм, сервер майнкрафт, майнкрафт сервер, minecraft server, construction-vt.gl.joinmc.link, айпи сервера, ip майнкрафт, русский майнкрафт сервер, топ сервер майнкрафт, майнкрафт 2026">
+    <meta name="author" content="VastumMC">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Telegram / соцсети -->
+    <meta property="og:title" content="VastumMC — неоновый мир Minecraft">
+    <meta property="og:description" content="Исследуй, выживай, побеждай на сервере VastumMC. Копируй IP и залетай!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lik0i.github.io">
+    <meta property="og:image" content="https://lik0i.github.io/preview.jpg">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VastumMC — сервер Minecraft">
+    <meta name="twitter:description" content="Заходи на VastumMC: два IP, падающие звёзды, удобное копирование.">
+    
+    <link rel="canonical" href="https://lik0i.github.io">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-darkest: #11111b;
+            --bg-dark: #1a1b26;
+            --bg-panel: #24283b;
+            --accent-lavender: #cba6f7;
+            --accent-mint: #94e2d5;
+            --accent-pink: #f5c2e7;
+            --accent-yellow: #f9e2af;
+            --accent-sky: #89dceb;
+            --text-primary: #c0caf5;
+            --text-dim: #565f89;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-darkest);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* === КОНТЕЙНЕР ДЛЯ ЗВЁЗД (летят вправо) === */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        @keyframes flyRight {
+            0% {
+                transform: translateX(-20vw) translateY(0) rotate(8deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(120vw) translateY(10vh) rotate(8deg);
+                opacity: 0;
+            }
+        }
+
+        .falling-star {
+            position: absolute;
+            width: 250px;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--star-color) 20%, 
+                var(--star-color) 60%,
+                white 90%,
+                white 100%
+            );
+            filter: blur(1.2px);
+            animation: flyRight linear infinite;
+            opacity: 0;
+            top: 10%;
+            left: 0;
+            border-radius: 0;
+            box-shadow: 0 0 15px var(--star-color);
+        }
+
+        .falling-star::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 25px var(--star-color), 0 0 50px var(--star-color), 0 0 80px white;
+            filter: blur(0.8px);
+        }
+
+        /* === Hero секция === */
+        .hero {
+            background: linear-gradient(rgba(26,27,38,0.7), rgba(17,17,27,0.7));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--accent-lavender);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            line-height: 1.2;
+            letter-spacing: normal;
+            text-transform: none;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            color: var(--text-primary);
+            text-shadow: 1px 1px 3px black;
+        }
+
+        .ip-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .ip-container {
+            background: rgba(36,40,59,0.2);
+            backdrop-filter: blur(10px);
+            padding: 22px 32px;
+            border-radius: 16px;
+            border: 1.5px solid var(--accent-lavender);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 320px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-shadow: 0 2px 4px black;
+        }
+
+        .ip-container:first-child {
+            border-color: var(--accent-mint);
+        }
+        .ip-container:last-child {
+            border-color: var(--accent-sky);
+        }
+
+        .ip-container:hover {
+            background: rgba(36,40,59,0.4);
+            border-color: var(--accent-pink);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(203,166,247,0.4);
+            backdrop-filter: blur(12px);
+        }
+
+        .ip-address {
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: monospace;
+            color: white;
+            word-break: break-all;
+            letter-spacing: 0.5px;
+        }
+
+        .ip-label {
+            display: block;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            color: var(--accent-yellow);
+            font-weight: 500;
+        }
+
+        .copy-status {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-lavender);
+            color: var(--bg-darkest);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* === Секция особенностей === */
+        .features {
+            padding: 100px 20px;
+            text-align: center;
+            background: var(--bg-darkest);
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: var(--accent-lavender);
+            text-shadow: 2px 2px 4px black;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(36,40,59,0.6);
+            backdrop-filter: blur(5px);
+            padding: 40px;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            border: 1px solid var(--text-dim);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(203,166,247,0.2);
+            border-color: var(--accent-lavender);
+            background: rgba(42,46,65,0.8);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--accent-mint);
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            color: var(--accent-yellow);
+        }
+
+        .feature-card p {
+            color: var(--text-primary);
+        }
+
+        /* === Секция галереи === */
+        .gallery-section {
+            padding: 100px 20px;
+            text-align: center;
+            background: var(--bg-darkest);
+            position: relative;
+            z-index: 1;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 40px auto 0;
+        }
+
+        .gallery-item {
+            background: rgba(36,40,59,0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--accent-pink);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-lavender);
+            box-shadow: 0 8px 25px rgba(203,166,247,0.3);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, var(--accent-lavender), var(--accent-sky));
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-darkest);
+            font-size: 3rem;
+        }
+
+        .gallery-caption {
+            padding: 15px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        /* === Секция правил (исправленная, без голосового чата) === */
+        .rules-section {
+            padding: 100px 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #1a1b26, #24283b);
+            position: relative;
+            z-index: 1;
+        }
+
+        .rules-content {
+            max-width: 800px;
+            margin: 30px auto 0;
+            text-align: left;
+            background: rgba(36,40,59,0.4);
+            backdrop-filter: blur(5px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-yellow);
+        }
+
+        .rules-content ul {
+            list-style: none;
+        }
+
+        .rules-content li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .rules-content li::before {
+            content: "✦";
+            position: absolute;
+            left: 0;
+            color: var(--accent-pink);
+            font-size: 1.2rem;
+        }
+
+        /* === Секция команды === */
+        .team-section {
+            padding: 100px 20px;
+            text-align: center;
+            background: var(--bg-darkest);
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 800px;
+            margin: 40px auto 0;
+        }
+
+        .team-card {
+            background: rgba(36,40,59,0.6);
+            backdrop-filter: blur(5px);
+            padding: 30px 20px;
+            border-radius: 16px;
+            border: 1px solid var(--accent-mint);
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-lavender);
+        }
+
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-lavender), var(--accent-sky));
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--bg-darkest);
+        }
+
+        .team-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-yellow);
+            margin-bottom: 5px;
+        }
+
+        .team-role {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        /* === СЕКЦИЯ ТОП ИГРОКОВ (часы) === */
+        .top-section {
+            padding: 100px 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #1a1b26, #24283b);
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 500px;
+            margin: 40px auto 0;
+        }
+
+        .top-player {
+            background: rgba(36,40,59,0.6);
+            backdrop-filter: blur(5px);
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid var(--accent-pink);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .top-player:hover {
+            transform: translateX(5px);
+            border-color: var(--accent-lavender);
+            background: rgba(42,46,65,0.8);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-rank {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--accent-yellow);
+            min-width: 40px;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .player-hours {
+            color: var(--accent-mint);
+            font-weight: 600;
+        }
+
+        .player-hours::after {
+            content: " ч";
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .top-note {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 20px;
+        }
+
+        /* === Секция донатов === */
+        .donation-section {
+            padding: 100px 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #1a1b26, #24283b);
+            position: relative;
+            z-index: 1;
+        }
+
+        .donation-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .donation-card {
+            background: rgba(36,40,59,0.6);
+            backdrop-filter: blur(5px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-pink);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .donation-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-lavender);
+            box-shadow: 0 8px 25px rgba(203,166,247,0.3);
+        }
+
+        .donation-card h3 {
+            font-size: 2rem;
+            color: var(--accent-yellow);
+            margin-bottom: 15px;
+        }
+
+        .donation-card p {
+            color: var(--text-primary);
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+
+        .btn-donation {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: var(--accent-pink);
+            color: var(--bg-darkest);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(245,194,231,0.3);
+            border: none;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
+        }
+
+        .btn-donation:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(245,194,231,0.5);
+            background-color: var(--accent-lavender);
+            color: var(--bg-darkest);
+        }
+
+        .donation-note {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 15px;
+        }
+
+        /* === Секция Telegram === */
+        .telegram-section {
+            padding: 100px 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #1a1b26, #24283b);
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-telegram {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: var(--accent-sky);
+            color: var(--bg-darkest);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(137,220,235,0.3);
+            border: none;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
+        }
+
+        .btn-telegram:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(137,220,235,0.5);
+            background-color: var(--accent-lavender);
+            color: var(--bg-darkest);
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: #0f0f17;
+            color: var(--text-dim);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* === Скрытый блок для SEO === */
+        .seo-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            border: 0;
+            color: transparent;
+            background: transparent;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+            .ip-address { font-size: 1.2rem; }
+            .ip-container { min-width: 260px; padding: 15px 20px; }
+            .donation-card { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-container" id="stars-container"></div>
+
+    <!-- Скрытый SEO-текст с ключевыми словами -->
+    <div class="seo-hidden">
+        VastumMC, Vastum MC, вастум мц, васткм мц, сервер майнкрафт, майнкрафт сервер, minecraft server, айпи сервера construction-vt.gl.joinmc.link, construction-vt.gl.joinmc.link:33690, русский майнкрафт сервер, топ сервер майнкрафт, майнкрафт 2026, ванильный сервер, пвп выживание, телеграм канал VastumMC, неоновый сайт, падающие звёзды, копирование ip.
+    </div>
+
+    <section class="hero">
+        <h1 class="animate-in">VastumMC</h1>
+        <p class="animate-in delay-1">Исследуй. Выживай. Побеждай.</p>
+        
+        <div class="ip-row animate-in delay-2">
+            <div class="ip-container" onclick="copyIP(this)">
+                <span class="copy-status">Скопировано!</span>
+                <div class="ip-address">construction-vt.gl.joinmc.link:33690</div>
+                <span class="ip-label">Нажми, чтобы скопировать</span>
+            </div>
+            <div class="ip-container" onclick="copyIP(this)">
+                <span class="copy-status">Скопировано!</span>
+                <div class="ip-address">construction-vt.gl.joinmc.link</div>
+                <span class="ip-label">Нажми, чтобы скопировать</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2 class="section-title animate-in">Почему выбирают нас?</h2>
+        <div class="features-grid">
+            <div class="feature-card animate-in delay-1">
+                <div class="feature-icon">🚀</div>
+                <h3>Стабильная работа</h3>
+                <p>Мощное железо и оптимизация обеспечивают высокий TPS даже при большом онлайне.</p>
+            </div>
+            <div class="feature-card animate-in delay-2">
+                <div class="feature-icon">⚔️</div>
+                <h3>Уникальный геймплей</h3>
+                <p>Сбалансированное выживание, интересные плагины и экономика, которую строят игроки.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <h2 class="section-title animate-in">Галерея</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item animate-in delay-1">
+                <div class="gallery-image">🏰</div>
+                <div class="gallery-caption">Спавн мира</div>
+            </div>
+            <div class="gallery-item animate-in delay-1">
+                <div class="gallery-image">⚔️</div>
+                <div class="gallery-caption">Пвп-арена</div>
+            </div>
+            <div class="gallery-item animate-in delay-2">
+                <div class="gallery-image">🌲</div>
+                <div class="gallery-caption">Лесная база</div>
+            </div>
+            <div class="gallery-item animate-in delay-2">
+                <div class="gallery-image">🏗️</div>
+                <div class="gallery-caption">Стройка</div>
+            </div>
+        </div>
+        <p class="top-note" style="margin-top: 20px;">Скоро здесь появятся реальные скриншоты с сервера</p>
+    </section>
+
+    <section class="rules-section">
+        <h2 class="section-title animate-in">Правила сервера</h2>
+        <div class="rules-content animate-in delay-1">
+            <ul>
+                <li>Уважайте других игроков — никаких оскорблений и токсичности</li>
+                <li>Запрещены читы и любые модификации, дающие преимущество</li>
+                <li>Не гриферить чужие постройки без согласия владельца</li>
+                <li>Не спамить в чат и не рекламировать другие сервера</li>
+                <li>Соблюдайте здравый смысл и правила сервера</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="team-section">
+        <h2 class="section-title animate-in">Команда сервера</h2>
+        <div class="team-grid">
+            <div class="team-card animate-in delay-1">
+                <div class="team-avatar">👑</div>
+                <div class="team-name">H11ve</div>
+                <div class="team-role">Владелец</div>
+            </div>
+            <div class="team-card animate-in delay-1">
+                <div class="team-avatar">⚡</div>
+                <div class="team-name">S7Nk0</div>
+                <div class="team-role">Кодер</div>
+            </div>
+            <div class="team-card animate-in delay-2">
+                <div class="team-avatar">🛡️</div>
+                <div class="team-name">USER00884</div>
+                <div class="team-role">Главный админ</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- СЕКЦИЯ ТОП ИГРОКОВ (часы) -->
+    <section class="top-section">
+        <h2 class="section-title animate-in">Топ игроков по времени</h2>
+        <div class="top-grid" id="top-players">
+            <!-- Данные будут загружаться через JSON -->
+        </div>
+        <p class="top-note animate-in">⏱️ Количество часов на сервере — обновляется раз в сутки</p>
+    </section>
+
+    <section class="donation-section">
+        <h2 class="section-title animate-in">Поддержать проект</h2>
+        <div class="donation-content">
+            <div class="donation-card animate-in delay-1">
+                <h3>💖 Сделать донат</h3>
+                <p>
+                    Ваша поддержка помогает нам содержать сервер, улучшать его и радовать вас новыми возможностями.<br>
+                    Все средства направляются на развитие VastumMC.
+                </p>
+                <a href="#" class="btn-donation" target="_blank">Перевести через СБП</a>
+                <p class="donation-note">
+                    🔒 Безопасно. Номер карты скрыт. Комиссия минимальная (0.4–0.7%).<br>
+                    Деньги поступают мгновенно на карту владельца.
+                </p>
+                <p class="donation-note" style="margin-top: 5px;">
+                    Ссылка работает через приложение вашего банка (СБП).
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="telegram-section">
+        <h2 class="section-title animate-in">Присоединяйся к сообществу</h2>
+        <p style="margin-bottom: 30px; color: var(--text-dim);">Общайся, находи друзей и узнавай новости первым.</p>
+        <a href="https://t.me/VastumMC" class="btn-telegram" target="_blank">Перейти в Telegram</a>
+    </section>
+
+    <footer>
+        <p>© 2026 VastumMC. Все права защищены.</p>
+    </footer>
+
+    <script>
+        function copyIP(container) {
+            const ipElement = container.querySelector('.ip-address');
+            const statusElement = container.querySelector('.copy-status');
+            if (!ipElement || !statusElement) return;
+            const ipText = ipElement.innerText;
+            navigator.clipboard.writeText(ipText).then(() => {
+                statusElement.style.opacity = '1';
+                setTimeout(() => {
+                    statusElement.style.opacity = '0';
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования: ', err);
+            });
+        }
+
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const colors = ['#cba6f7', '#94e2d5', '#f5c2e7', '#f9e2af', '#89dceb'];
+            for (let i = 0; i < 45; i++) {
+                const star = document.createElement('div');
+                star.className = 'falling-star';
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                star.style.setProperty('--star-color', color);
+                const duration = 4 + Math.random() * 6;
+                star.style.animationDuration = duration + 's';
+                const delay = Math.random() * 10;
+                star.style.animationDelay = delay + 's';
+                const top = Math.random() * 90;
+                star.style.top = top + '%';
+                const width = 200 + Math.random() * 150;
+                star.style.width = width + 'px';
+                container.appendChild(star);
+            }
+        }
+
+        // === ЗАГРУЗКА ТОП ИГРОКОВ ИЗ JSON ===
+        function loadTopPlayers() {
+            const topContainer = document.getElementById('top-players');
+            
+            fetch('top-players.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Файл не найден, используем демо-данные');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    renderTopPlayers(data.players);
+                })
+                .catch(() => {
+                    // Демо-данные, если файла нет
+                    const demoPlayers = [
+                        { rank: 1, name: 'Vastum', hours: 245 },
+                        { rank: 2, name: 'ShadowCraft', hours: 198 },
+                        { rank: 3, name: 'NovaStar', hours: 167 },
+                        { rank: 4, name: 'EnderKing', hours: 142 },
+                        { rank: 5, name: 'MinerPro', hours: 98 }
+                    ];
+                    renderTopPlayers(demoPlayers);
+                });
+        }
+
+        function renderTopPlayers(players) {
+            const topContainer = document.getElementById('top-players');
+            topContainer.innerHTML = '';
+            
+            players.forEach(player => {
+                const playerElement = document.createElement('div');
+                playerElement.className = 'top-player';
+                playerElement.innerHTML = `
+                    <div class="player-info">
+                        <span class="player-rank">#${player.rank}</span>
+                        <span class="player-name">${player.name}</span>
+                    </div>
+                    <span class="player-hours">${player.hours}</span>
+                `;
+                topContainer.appendChild(playerElement);
+            });
+        }
+
+        window.addEventListener('load', () => {
+            createStars();
+            loadTopPlayers();
+        });
+        
+        setInterval(createStars, 20000);
+    </script>
+</body>
+</html>
